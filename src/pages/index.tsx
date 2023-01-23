@@ -1,12 +1,25 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-
 import { api } from "../utils/api";
+import Image from "next/image";
+import useInput from "../hooks/useInput";
+import { useState } from "react";
 
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  const [userStoryPrompt, setUserStoryPrompt] = useState("");
+  const imageStory = api.example.imageStory.useQuery();
+
+  const {
+    inputValue: userPrompt,
+    valueHandler: userPromptHandler,
+    reset: resetUserPrompt,
+  } = useInput(() => true, "");
+
+  const storyPromptHandler = () => {
+    setUserStoryPrompt(userPrompt);
+    resetUserPrompt();
+  };
 
   return (
     <>
@@ -18,37 +31,101 @@ const Home: NextPage = () => {
       <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16 ">
           <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+            AI <span className="text-[hsl(280,100%,70%)]">Image</span> Story
           </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
+          <div className="flex flex-col gap-2">
+            {imageStory && (
+              <div className="text-left text-4xl font-extrabold text-white">
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                  imageStory.data?.message.story.title
+                }
+                {/* Lost in Space */}
               </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
+            )}
+            {/* {imageStory && (
+              <div className="text-left text-2xl font-semibold text-white">
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                  imageStory.data?.message.story.subtitle
+                }
+              </div>)} 
+              */}
+
+            <div className="flex items-center gap-6">
+              {
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                imageStory.data?.message.image ? (
+                  <Image
+                    className="align-self-center rounded-md"
+                    alt="Picture"
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                    //
+                    src={imageStory.data?.message.image}
+                    width={256}
+                    height={256}
+                  />
+                ) : (
+                  <div className="h-64 w-64 animate-pulse rounded-md bg-white/10" />
+                )
+              }
+
+              {imageStory && (
+                <div className="max-w-[300px] text-white">
+                  {
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                    imageStory.data?.message.story.description
+                  }
+                  {/* A team of intrepid astronauts from a distant galaxy have
+                  arrived on the distant planet of Mars, ready to explore its
+                  untrodden terrain and uncover its secrets. Armed with their
+                  sophisticated tools and equipment, they stand together on the
+                  red planet's rugged surface, gazing out into the unknown and
+                  ready to unlock its mysteries. */}
+                </div>
+              )}
+            </div>
+            <div className="mb-3 w-[652px]">
+              <label
+                htmlFor="exampleFormControlTextarea1"
+                className="form-label mb-2 inline-block text-white"
+              >
+                Create Story
+              </label>
+              <textarea
+                value={userPrompt}
+                onChange={userPromptHandler}
+                className="
+        form-control
+        border-grey
+        m-0
+        block
+        min-h-[75px]
+        w-full
+        rounded
+        border
+        border-solid
+        bg-white/30 bg-clip-padding
+        px-3 py-1.5 text-base
+        font-normal
+        text-white
+        transition
+        ease-in-out
+        focus:border-[#CC66FF] focus:bg-white/25 focus:text-white focus:outline-none
+      "
+                id="exampleFormControlTextarea1"
+                placeholder=""
+              ></textarea>
+            </div>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello.data ? hello.data.greeting : "Loading tRPC query..."}
-            </p>
-            <AuthShowcase />
+            <button
+              className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+              onClick={storyPromptHandler}
+            >
+              Create Image Story
+            </button>
+            {/* <AuthShowcase /> */}
           </div>
         </div>
       </main>
@@ -63,7 +140,7 @@ const AuthShowcase: React.FC = () => {
 
   const { data: secretMessage } = api.example.getSecretMessage.useQuery(
     undefined, // no input
-    { enabled: sessionData?.user !== undefined },
+    { enabled: sessionData?.user !== undefined }
   );
 
   return (
