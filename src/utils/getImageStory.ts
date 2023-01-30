@@ -12,18 +12,19 @@ const CreatePrompt = (prompt: string) => {
         title: "The story title",
         subTitle: "The story subtitle",
         description:
-          "The story description must be at between 300-310 characters",
+          "The story description MUST be at between 300-310 characters",
       },
       imagePrompt:
         "A group of astronauts in space suits standing on the surface of Mars, with the planet's rugged terrain and reddish sky visible in the background. The team is gathered around a large rover, which appears to be in the process of being loaded with equipment. In the foreground, one astronaut can be seen using a handheld device to collect data or take measurements. Another astronaut is looking through a telescope, while another is setting up a drill or other instrument. All the members of the team look focused and determined, ready to explore the unknown.",
     },
   ]);
 
-  const engineeredPrompt = `Give me a Storyboard using a image prompt
+  const engineeredPrompt = `Give me a short story using a image prompt
   I want this story to be about ${prompt}
   Give me the story in json format as a paragraph in an object in the array.
+  The Story MUST be between 300-310 characters no more no less.
   Give me this in the same json object.
-  Here is an example of how to format the frames of the storyboard: These frames need to be image prompts that can be used in a Image AI generation like Dall E 2
+  Here is an example of how to format the frames of the storyboard: These frames need to be image prompts that can be used in a Image AI generation like Dall E 2 give very good descriptions of the image.
   Make the output in an json array like this:
   ${exampleResponse}
 `;

@@ -18,18 +18,15 @@ export const exampleRouter = createTRPCRouter({
       };
     }),
 
-  imageStory: publicProcedure.query(async ({ input }) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    console.log(input);
-    const { image, story } = await getImageStory(
-      "nine bells who are also magical girls are in danger. can the heros save them before their father destroys the city?"
-    );
-
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      message: { image, story },
-    };
-  }),
+  imageStory: publicProcedure
+    .input(z.object({ message: z.string() }))
+    .query(async ({ input }) => {
+      const { image, story } = await getImageStory(input.message);
+      return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        message: { image, story },
+      };
+    }),
 
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.example.findMany();
